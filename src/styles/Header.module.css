@@ -1,0 +1,76 @@
+.header {
+    height: 64px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(15, 15, 18, 0.82);
+    backdrop-filter: blur(16px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.left {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.logo {
+    font-weight: 800;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-decoration: none;
+    letter-spacing: -0.02em;
+}
+
+.nav {
+    flex: 1;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.navItem {
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: color 0.15s;
+    font-size: 0.95rem;
+}
+
+.navItem:hover,
+.navItem.active {
+    color: var(--foreground);
+}
+
+.createButton {
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s;
+}
+
+.createButton:hover {
+    background: var(--primary-hover);
+}

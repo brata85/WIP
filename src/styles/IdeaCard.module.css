@@ -1,0 +1,169 @@
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    background-color: var(--card-hover);
+    border-color: var(--secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--foreground);
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.username {
+    color: var(--accent-blue);
+    font-weight: 600;
+}
+
+.username:hover {
+    text-decoration: underline;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tag.idea {
+    background-color: rgba(234, 179, 8, 0.15);
+    color: #fbbf24;
+}
+
+.tag.live {
+    background-color: rgba(249, 115, 22, 0.15);
+    color: #fb923c;
+}
+
+.tag.working {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}
+
+.tag.pre-launch {
+    background-color: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+}
+
+
+
+.description {
+    color: #d4d4d8;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    /* Standard property */
+    -webkit-box-orient: vertical;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.action {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    transition: color 0.2s;
+}
+
+.action:hover {
+    color: var(--foreground);
+}
+
+.action.liked {
+    color: var(--accent-green);
+    /* Or red/heart color */
+}
+
+.dot {
+    width: 3px;
+    height: 3px;
+    background-color: var(--secondary);
+    border-radius: 50%;
+}
+
+.contentWrapper {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.textContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+    /* Crucial for text truncation in flex items */
+}
+
+
+.image {
+    width: 120px;
+    height: 120px;
+    min-width: 120px;
+    /* Force minimum width */
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-top: 0.25rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}

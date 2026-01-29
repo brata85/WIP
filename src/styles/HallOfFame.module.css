@@ -1,0 +1,118 @@
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.rankCard {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s;
+}
+
+.rankCard:hover {
+    transform: translateY(-2px);
+    border-color: var(--secondary);
+}
+
+.rankPosition {
+    font-size: 1.5rem;
+    font-weight: 800;
+    width: 40px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.rank1 {
+    color: #FFD700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.rank2 {
+    color: #C0C0C0;
+    text-shadow: 0 0 10px rgba(192, 192, 192, 0.3);
+}
+
+.rank3 {
+    color: #CD7F32;
+    text-shadow: 0 0 10px rgba(205, 127, 50, 0.3);
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    background: var(--secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--foreground);
+    font-size: 1.25rem;
+}
+
+.userInfo {
+    flex: 1;
+}
+
+.userName {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--foreground);
+    display: block;
+}
+
+.userStats {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.score {
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.scoreValue {
+    font-size: 1.25rem;
+}
+
+.scoreLabel {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: normal;
+}
+
+.currentUserCard {
+    margin-top: 2rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+}
+
+.myRankCard {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+    border: 1px solid var(--primary);
+}

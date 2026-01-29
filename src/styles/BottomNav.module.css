@@ -1,0 +1,61 @@
+.bottomNav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--background);
+    /* Or card-bg */
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    padding: 0.5rem 1rem;
+    z-index: 100;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+    min-width: 64px;
+}
+
+.navItem.active {
+    color: var(--foreground);
+}
+
+/* Active Indicator Style similar to screenshot */
+.navItem.active .iconWrapper {
+    background: var(--foreground);
+    /* White/Light in active */
+    color: var(--background);
+    /* Dark icon */
+}
+
+/* Or active state is a filled box around the whole item or just the icon? 
+   In screenshot, "HOME" box is black (filled) and text is white inside? 
+   Actually, the screenshot shows a Black Box with White Icon and "HOME" Text.
+   The inactive ones are just Icon + Text in gray.
+*/
+
+.navItem.active {
+    background: var(--foreground);
+    color: var(--background);
+    border-radius: 12px;
+}
+
+.iconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+}
+
+/* Specific icon styles if needed */
