@@ -20,9 +20,9 @@
 
 .header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .title {
@@ -136,17 +136,11 @@
 .contentWrapper {
     display: flex;
     gap: 1rem;
+    align-items: flex-start;
     justify-content: space-between;
 }
 
-.textContent {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    flex: 1;
-    min-width: 0;
-    /* Crucial for text truncation in flex items */
-}
+/* Previously .textContent was here, removing it */
 
 
 .image {

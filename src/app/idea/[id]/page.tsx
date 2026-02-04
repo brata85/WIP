@@ -13,11 +13,20 @@ export default function IdeaDetailPage() {
     const { getIdea, likeIdea, dislikeIdea, addComment, userVotes, editIdea, editComment, deleteIdea, deleteComment } = useIdeas();
 
     // Edit states
+    // Edit states
     const [isEditingIdea, setIsEditingIdea] = useState(false);
     const [editTitle, setEditTitle] = useState('');
-    const [editDesc, setEditDesc] = useState('');
+    const [activeTab, setActiveTab] = useState<'planning' | 'details' | 'roadmap'>('planning');
+    const [editContent, setEditContent] = useState({
+        planning: '',
+        details: '',
+        roadmap: ''
+    });
     const [editImages, setEditImages] = useState<string[]>([]);
+    // State for image modal
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+    // ... comment states ...
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const [editCommentContent, setEditCommentContent] = useState('');
 
@@ -27,17 +36,31 @@ export default function IdeaDetailPage() {
     // Retrieve the idea
     const idea = getIdea(Array.isArray(id) ? id[0] : id!);
 
+    const TAB_CONFIG = [
+        { id: 'planning', label: 'Planning' },
+        { id: 'details', label: 'Details' },
+        { id: 'roadmap', label: 'Roadmap' },
+    ] as const;
+
     // Initialize edit state when idea loads or changes
     useEffect(() => {
         if (idea) {
             setEditTitle(idea.title);
-            setEditDesc(idea.description);
+            // Handle backward compatibility if idea.content is missing (should not happen with new mock data)
+            if (idea.content) {
+                setEditContent(idea.content);
+            } else {
+                // Fallback if needed, though we updated mock data.
+                // @ts-ignore
+                setEditContent({ planning: idea.description || '', details: '', roadmap: '' });
+            }
             const imgs = idea.images && idea.images.length > 0 ? idea.images : (idea.imageUrl ? [idea.imageUrl] : []);
             setEditImages(imgs);
         }
     }, [idea]);
 
     if (!idea) {
+        // ... (existing error handling)
         return (
             <div style={{ textAlign: 'center', marginTop: '4rem' }}>
                 <h2>Idea not found</h2>
@@ -62,7 +85,7 @@ export default function IdeaDetailPage() {
     const handleSaveIdea = () => {
         editIdea(idea.id, {
             title: editTitle,
-            description: editDesc,
+            content: editContent,
             imageUrl: editImages[0] || undefined,
             images: editImages
         });
@@ -114,8 +137,14 @@ export default function IdeaDetailPage() {
 
     const displayImages = idea.images && idea.images.length > 0 ? idea.images : (idea.imageUrl ? [idea.imageUrl] : []);
 
+    const handleContentChange = (val: string) => {
+        setEditContent(prev => ({ ...prev, [activeTab]: val }));
+    }
+
+    // ... (render return ...)
     return (
         <div className={styles.container}>
+            {/* ... back button and header ... */}
             <button onClick={() => router.back()} className={styles.backButton}>
                 <ArrowLeft size={20} /> Back
             </button>
@@ -130,28 +159,30 @@ export default function IdeaDetailPage() {
                             style={{ fontSize: '1.5rem', fontWeight: 800, width: '100%', marginBottom: '0.5rem' }}
                         />
                     ) : (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'flex-start' }}>
-                            <h1 className={styles.title}>{idea.title}</h1>
-                            {isAuthor && (
-                                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                    <button onClick={() => setIsEditingIdea(true)} className={styles.editButton}>
-                                        Edit
-                                    </button>
-                                    <button onClick={handleDeleteIdea} className={styles.deleteButton}>
-                                        Delete
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+                        <h1 className={styles.title}>{idea.title}</h1>
                     )}
 
-                    <div className={styles.meta}>
-                        <span className={styles.author}>{idea.author}</span>
-                        <span className={styles.handle}>{idea.authorHandle}</span>
-                        <span className={styles.date}>• {idea.createdAt}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div className={styles.meta}>
+                            <span className={styles.author}>{idea.author}</span>
+                            <span className={styles.handle}>{idea.authorHandle}</span>
+                            <span className={styles.date}>• {idea.createdAt}</span>
+                        </div>
+
+                        {!isEditingIdea && isAuthor && (
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button onClick={() => setIsEditingIdea(true)} className={styles.editButton}>
+                                    Edit
+                                </button>
+                                <button onClick={handleDeleteIdea} className={styles.deleteButton}>
+                                    Delete
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
+                {/* Image Section (Keep as is) */}
                 {isEditingIdea ? (
                     <div style={{ marginBottom: '2rem' }}>
                         <div className={styles.imageGrid}>
@@ -180,7 +211,12 @@ export default function IdeaDetailPage() {
                     displayImages.length > 0 && (
                         <div className={styles.imageGrid}>
                             {displayImages.map((img, index) => (
-                                <div key={index} className={styles.imagePreviewWrapper} style={{ aspectRatio: 'auto' }}>
+                                <div
+                                    key={index}
+                                    className={styles.imagePreviewWrapper}
+                                    style={{ aspectRatio: 'auto', cursor: 'pointer' }}
+                                    onClick={() => setSelectedImage(img)}
+                                >
                                     <img src={img} alt={`Idea ${index}`} className={styles.gridImage} />
                                 </div>
                             ))}
@@ -189,14 +225,47 @@ export default function IdeaDetailPage() {
                 )}
 
 
+                {/* Content Body with Tabs */}
                 <div className={styles.body}>
+                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>
+                        {TAB_CONFIG.map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    padding: '0.5rem 0.25rem',
+                                    fontSize: '1rem',
+                                    fontWeight: activeTab === tab.id ? 700 : 500,
+                                    color: activeTab === tab.id ? 'var(--primary)' : 'var(--text-muted)',
+                                    cursor: 'pointer',
+                                    position: 'relative'
+                                }}
+                            >
+                                {tab.label}
+                                {activeTab === tab.id && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        bottom: '-0.5rem',
+                                        left: 0,
+                                        width: '100%',
+                                        height: '2px',
+                                        background: 'var(--primary)'
+                                    }} />
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
                     {isEditingIdea ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                             <textarea
                                 className={styles.editTextarea}
-                                value={editDesc}
-                                onChange={e => setEditDesc(e.target.value)}
-                                rows={6}
+                                value={editContent[activeTab]}
+                                onChange={e => handleContentChange(e.target.value)}
+                                rows={10}
+                                placeholder={`Enter ${TAB_CONFIG.find(t => t.id === activeTab)?.label}...`}
                             />
                             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                                 <button onClick={() => setIsEditingIdea(false)} className={styles.cancelButton}>Cancel</button>
@@ -204,7 +273,13 @@ export default function IdeaDetailPage() {
                             </div>
                         </div>
                     ) : (
-                        <p className={styles.description}>{idea.description}</p>
+                        <div style={{ minHeight: '100px' }}>
+                            {idea.content ? (
+                                <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{idea.content[activeTab] || 'No content provided.'}</p>
+                            ) : (
+                                <p>No content available.</p>
+                            )}
+                        </div>
                     )}
                 </div>
 
@@ -307,6 +382,18 @@ export default function IdeaDetailPage() {
                     )}
                 </div>
             </div>
+
+            {/* Full Screen Image Modal */}
+            {selectedImage && (
+                <div className={styles.imageModalOverlay} onClick={() => setSelectedImage(null)}>
+                    <div className={styles.imageModalContent} onClick={e => e.stopPropagation()}>
+                        <button className={styles.closeModalButton} onClick={() => setSelectedImage(null)}>
+                            <X size={24} /> Close
+                        </button>
+                        <img src={selectedImage} alt="Full screen" className={styles.fullImage} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 

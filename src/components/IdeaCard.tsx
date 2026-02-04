@@ -18,45 +18,41 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
     return (
         <Link href={`/idea/${idea.id}`} style={{ textDecoration: 'none' }}>
             <div className={styles.card}>
-                <div className={styles.contentWrapper}>
-                    <div className={styles.textContent}>
-                        <div className={styles.header}>
-                            <div style={{ flex: 1 }}>
-                                <h3 className={styles.title}>{idea.title}</h3>
+                <div className={styles.header}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                        <h3 className={styles.title}>{idea.title}</h3>
 
-                                <div className={styles.meta}>
-                                    <span className={styles.username}>{idea.author}</span>
-                                    <span className={styles.username} style={{ opacity: 0.7 }}>{idea.authorHandle}</span>
+                        <div className={styles.meta}>
+                            <span className={styles.username}>{idea.author}</span>
+                            <span className={styles.username} style={{ opacity: 0.7 }}>{idea.authorHandle}</span>
 
-                                    {isIdea && (
-                                        <span className={`${styles.tag} ${styles.idea}`}>
-                                            <span style={{ marginRight: 4 }}>💡</span> Idea
-                                        </span>
-                                    )}
-                                    {idea.tags.includes('working') && (
-                                        <span className={`${styles.tag} ${styles.working}`}>
-                                            <span style={{ marginRight: 4 }}>🛠️</span> Working
-                                        </span>
-                                    )}
-                                    {idea.tags.includes('pre-launch') && (
-                                        <span className={`${styles.tag} ${styles['pre-launch']}`}>
-                                            <span style={{ marginRight: 4 }}>🛫</span> Pre-launch
-                                        </span>
-                                    )}
+                            {isIdea && (
+                                <span className={`${styles.tag} ${styles.idea}`}>
+                                    <span style={{ marginRight: 4 }}>💡</span> Idea
+                                </span>
+                            )}
+                            {idea.tags.includes('working') && (
+                                <span className={`${styles.tag} ${styles.working}`}>
+                                    <span style={{ marginRight: 4 }}>🛠️</span> Working
+                                </span>
+                            )}
+                            {idea.tags.includes('pre-launch') && (
+                                <span className={`${styles.tag} ${styles['pre-launch']}`}>
+                                    <span style={{ marginRight: 4 }}>🛫</span> Pre-launch
+                                </span>
+                            )}
 
-                                    {isLive && (
-                                        <span className={`${styles.tag} ${styles.live}`}>
-                                            <span style={{ marginRight: 4 }}>🚀</span> Live
-                                        </span>
-                                    )}
-
-
-                                </div>
-                            </div>
+                            {isLive && (
+                                <span className={`${styles.tag} ${styles.live}`}>
+                                    <span style={{ marginRight: 4 }}>🚀</span> Live
+                                </span>
+                            )}
                         </div>
-
-                        <p className={styles.description}>{idea.description}</p>
                     </div>
+                </div>
+
+                <div className={styles.contentWrapper}>
+                    <p className={styles.description}>{idea.content?.planning || (idea as any).description || 'No description available'}</p>
 
                     {idea.imageUrl && (
                         <img src={idea.imageUrl} alt={idea.title} className={styles.image} />

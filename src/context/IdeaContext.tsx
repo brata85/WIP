@@ -49,8 +49,17 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
     // Save to localStorage whenever state changes
     useEffect(() => {
         if (isLoaded) {
-            localStorage.setItem('antigravity_ideas', JSON.stringify(ideas));
-            localStorage.setItem('antigravity_votes', JSON.stringify(userVotes));
+            try {
+                localStorage.setItem('antigravity_ideas', JSON.stringify(ideas));
+                localStorage.setItem('antigravity_votes', JSON.stringify(userVotes));
+            } catch (error) {
+                console.error("Failed to save to localStorage (Quota Exceeded):", error);
+                // Optionally verify if it's a quota error
+                if (error instanceof DOMException &&
+                    (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+                    alert("Local storage is full! Your latest changes (likely large images) might not be saved. Please delete some items.");
+                }
+            }
         }
     }, [ideas, userVotes, isLoaded]);
 

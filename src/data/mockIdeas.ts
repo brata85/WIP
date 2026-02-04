@@ -5,12 +5,18 @@ export interface Comment {
   createdAt: string;
 }
 
+export interface IdeaContent {
+  planning: string;
+  details: string;
+  roadmap: string;
+}
+
 export interface Idea {
   id: string;
   title: string;
   author: string;
   authorHandle: string;
-  description: string;
+  content: IdeaContent;
   tags: string[];
   likes: number;
   dislikes: number;
@@ -28,7 +34,11 @@ export const MOCK_IDEAS: Idea[] = [
     title: "testtesttest",
     author: "You",
     authorHandle: "@you",
-    description: "testtesttesttest",
+    content: {
+      planning: "This project aims to solve the problem of...",
+      details: "testtesttesttest",
+      roadmap: "Phase 1: Launch MVP\nPhase 2: User feedback"
+    },
     tags: ["live"],
     likes: 0,
     dislikes: 0,

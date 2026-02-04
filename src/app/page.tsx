@@ -16,7 +16,9 @@ export default function Home() {
     // 1. Search Filter
     const matchesSearch =
       idea.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      idea.description.toLowerCase().includes(searchQuery.toLowerCase());
+      idea.content.planning.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      idea.content.details.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (idea.content.roadmap && idea.content.roadmap.toLowerCase().includes(searchQuery.toLowerCase()));
 
     // 2. Type Filter
     const matchesType = activeFilter === 'all' || idea.tags.includes(activeFilter);
@@ -33,7 +35,7 @@ export default function Home() {
   ];
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 1rem' }}>
 
       {/* Search & Filters */}
       <div className={styles.searchContainer}>
