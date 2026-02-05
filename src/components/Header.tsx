@@ -9,7 +9,7 @@ export default function Header() {
                 <div className={styles.left}></div>
 
                 <Link href="/" className={styles.logo}>
-                    IdeaCast
+                    WIP
                 </Link>
 
                 <nav className={styles.nav}>

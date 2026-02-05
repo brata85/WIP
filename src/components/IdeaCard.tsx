@@ -4,82 +4,36 @@ import React from 'react';
 import Link from 'next/link';
 import { Idea } from '@/data/mockIdeas';
 import styles from '@/styles/IdeaCard.module.css';
-import { ThumbsUp, ThumbsDown, MessageSquare, Lightbulb, Zap, Hammer } from 'lucide-react';
-
 
 interface IdeaCardProps {
     idea: Idea;
 }
 
 export default function IdeaCard({ idea }: IdeaCardProps) {
-    const isIdea = idea.tags.includes('idea');
-    const isLive = idea.tags.includes('live');
-
     return (
-        <Link href={`/idea/${idea.id}`} style={{ textDecoration: 'none' }}>
+        <Link href={`/idea/${idea.id}`} style={{ textDecoration: 'none', height: '100%', display: 'block' }}>
             <div className={styles.card}>
-                <div className={styles.header}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                        <h3 className={styles.title}>{idea.title}</h3>
-
-                        <div className={styles.meta}>
-                            <span className={styles.username}>{idea.author}</span>
-                            <span className={styles.username} style={{ opacity: 0.7 }}>{idea.authorHandle}</span>
-
-                            {isIdea && (
-                                <span className={`${styles.tag} ${styles.idea}`}>
-                                    <span style={{ marginRight: 4 }}>💡</span> Idea
-                                </span>
-                            )}
-                            {idea.tags.includes('working') && (
-                                <span className={`${styles.tag} ${styles.working}`}>
-                                    <span style={{ marginRight: 4 }}>🛠️</span> Working
-                                </span>
-                            )}
-                            {idea.tags.includes('pre-launch') && (
-                                <span className={`${styles.tag} ${styles['pre-launch']}`}>
-                                    <span style={{ marginRight: 4 }}>🛫</span> Pre-launch
-                                </span>
-                            )}
-
-                            {isLive && (
-                                <span className={`${styles.tag} ${styles.live}`}>
-                                    <span style={{ marginRight: 4 }}>🚀</span> Live
-                                </span>
-                            )}
-                        </div>
-                    </div>
+                <div>
+                    <div className={styles.label}>Trending Project:</div>
+                    <h3 className={styles.title}>{idea.title}</h3>
+                    <p className={styles.description}>
+                        {idea.content?.planning || 'No description available for this project.'}
+                    </p>
                 </div>
-
-                <div className={styles.contentWrapper}>
-                    <p className={styles.description}>{idea.content?.planning || (idea as any).description || 'No description available'}</p>
-
-                    {idea.imageUrl && (
-                        <img src={idea.imageUrl} alt={idea.title} className={styles.image} />
-                    )}
-                </div>
-
-
 
                 <div className={styles.footer}>
-                    <div className={styles.action}>
-                        <ThumbsUp size={16} />
-                        <span>{idea.likes}</span>
+                    <button className={styles.voteButton}>
+                        Feedback
+                    </button>
+
+                    <div className={styles.userInfo}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: '1.2' }}>
+                            <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>↑ {idea.likes}</span>
+                        </div>
+                        {/* Placeholder Avatar */}
+                        <div className={styles.avatar} style={{ background: 'linear-gradient(45deg, #8b5cf6, #06b6d4)' }} />
+                        <span className={styles.userName}>{idea.author}</span>
                     </div>
-
-                    <div className={styles.action}>
-                        <ThumbsDown size={16} />
-                        <span>{idea.dislikes || 0}</span>
-                    </div>
-
-                    <div className={styles.action}>
-                        <MessageSquare size={16} />
-                        <span>{idea.comments.length}</span>
-                    </div>
-
-                    <div className={styles.dot} />
-
-                    <span>{idea.createdAt}</span>
                 </div>
             </div>
         </Link>

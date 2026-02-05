@@ -1,39 +1,58 @@
 .card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border);
+    /* Exact Glass Style from Image 1 */
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    /* Soft Thin Border */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
     border-radius: var(--radius-lg);
-    padding: 1.25rem;
-    transition: all 0.2s ease;
+    padding: 1.75rem;
+    /* Larger padding */
+
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    justify-content: space-between;
+    /* Push content apart */
+    gap: 1.5rem;
+    /* Spacious Gap */
     position: relative;
     overflow: hidden;
+    height: 100%;
+    /* For Grid */
+
+    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
 .card:hover {
-    background-color: var(--card-hover);
-    border-color: var(--secondary);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 40px -5px rgba(0, 0, 0, 0.4);
 }
 
 .header {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-bottom: 0.5rem;
+}
+
+.label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 500;
 }
 
 .title {
-    font-size: 1.125rem;
+    font-size: 2rem;
+    /* Much Larger Title */
     font-weight: 700;
     color: var(--foreground);
-    margin-bottom: 0.25rem;
-    line-height: 1.4;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin: 0.25rem 0 1rem 0;
 }
 
 
@@ -89,25 +108,62 @@
 
 
 .description {
-    color: #d4d4d8;
-    font-size: 0.9375rem;
+    color: #94a3b8;
+    font-size: 1rem;
     line-height: 1.6;
-    overflow: hidden;
-    text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    /* Standard property */
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .footer {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
-    margin-top: 0.5rem;
-    color: var(--text-muted);
-    font-size: 0.875rem;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+/* Gradient Vote Button */
+.voteButton {
+    background: var(--gradient-main);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+    transition: filter 0.2s;
+}
+
+.voteButton:hover {
+    filter: brightness(1.1);
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: #334155;
+    /* Fallback */
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.userName {
+    font-weight: 500;
+    color: #e2e8f0;
 }
 
 .action {
@@ -151,13 +207,4 @@
     object-fit: cover;
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
-}
-
-.footer {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    margin-top: 0.25rem;
-    color: var(--text-muted);
-    font-size: 0.875rem;
 }

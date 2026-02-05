@@ -70,11 +70,11 @@ export default function CreateIdeaPage() {
 
     return (
         <div className={styles.container}>
-            <h1 style={{ marginBottom: '2rem', fontSize: '1.5rem', fontWeight: 800 }}>Share your Idea</h1>
+            <h1 style={{ marginBottom: '2rem', fontSize: '1.5rem', fontWeight: 800 }}>Think. Build. Improve with feedback.</h1>
 
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.group}>
-                    <label className={styles.label}>Project Title</label>
+                    <label className={styles.label}>Project Title (Working Title)</label>
                     <input
                         className={styles.input}
                         type="text"
@@ -160,10 +160,10 @@ export default function CreateIdeaPage() {
                     <div className={styles.tagLabel}>Type</div>
                     <div className={styles.pillContainer}>
                         {[
-                            { id: 'idea', label: 'Idea', emoji: '💡' },
-                            { id: 'working', label: 'Working', emoji: '🛠️' },
-                            { id: 'pre-launch', label: 'Pre-launch', emoji: '🛫' },
-                            { id: 'live', label: 'Live', emoji: '🚀' }
+                            { id: 'idea', label: 'Idea', emoji: '' },
+                            { id: 'working', label: 'Working', emoji: '' },
+                            { id: 'pre-launch', label: 'Pre-launch', emoji: '' },
+                            { id: 'live', label: 'Live', emoji: '' }
                         ].map((type) => (
                             <button
                                 key={type.id}
@@ -172,7 +172,7 @@ export default function CreateIdeaPage() {
                                 onClick={() => setTags(type.id)}
                                 data-value={type.id}
                             >
-                                <span>{type.emoji}</span>
+                                {type.emoji && <span>{type.emoji}</span>}
                                 {type.label}
                             </button>
                         ))}
@@ -180,7 +180,7 @@ export default function CreateIdeaPage() {
                 </div>
 
                 <button type="submit" className={styles.submitButton}>
-                    Post Idea
+                    Posting
                 </button>
             </form>
 

@@ -64,8 +64,20 @@
 
 .pillContainer {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    /* Force single line like home page */
     gap: 0.75rem;
+    overflow-x: auto;
+    /* Allow scroll if needed on small screens */
+    padding: 4px 4px 0.5rem 4px;
+    /* Add padding to prevent shadow clipping */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.pillContainer::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
 }
 
 .pill {
@@ -75,12 +87,15 @@
     background: #27272a;
     /* Zinc 800ish */
     border: 1px solid #3f3f46;
-    padding: 0.6rem 1.25rem;
-    border-radius: 9999px;
+    padding: 6px 14px;
+    border-radius: 20px;
     cursor: pointer;
     color: #a1a1aa;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 11px;
+    /* Smaller font */
+    height: 28px;
+    /* Fixed small height */
     transition: all 0.2s;
     user-select: none;
 }
