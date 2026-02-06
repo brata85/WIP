@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { Upload, X } from 'lucide-react';
 import { useIdeas } from '@/context/IdeaContext';
+import PaymentModal from '@/components/PaymentModal';
 
 export default function CreateIdeaPage() {
     const router = useRouter();
@@ -14,6 +15,8 @@ export default function CreateIdeaPage() {
     const [title, setTitle] = useState('');
     const [tags, setTags] = useState('idea');
     const [images, setImages] = useState<string[]>([]);
+
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
     // Tab State
     const [activeTab, setActiveTab] = useState<'planning' | 'details' | 'roadmap'>('planning');
@@ -31,7 +34,10 @@ export default function CreateIdeaPage() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        setIsPaymentModalOpen(true);
+    };
 
+    const handlePaymentSuccess = () => {
         addIdea({
             title: title,
             content: content,
@@ -42,6 +48,7 @@ export default function CreateIdeaPage() {
             images: images, // All images
         });
 
+        setIsPaymentModalOpen(false);
         router.push('/');
     };
 
@@ -184,6 +191,12 @@ export default function CreateIdeaPage() {
                 </button>
             </form>
 
+            <PaymentModal
+                isOpen={isPaymentModalOpen}
+                onClose={() => setIsPaymentModalOpen(false)}
+                onSuccess={handlePaymentSuccess}
+                amount={1}
+            />
         </div>
     );
 }

@@ -275,7 +275,7 @@ export default function IdeaDetailPage() {
                     ) : (
                         <div style={{ minHeight: '100px' }}>
                             {idea.content ? (
-                                <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{idea.content[activeTab] || 'No content provided.'}</p>
+                                <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, overflowWrap: 'anywhere', wordBreak: 'break-all' }}>{idea.content[activeTab] || 'No content provided.'}</p>
                             ) : (
                                 <p>No content available.</p>
                             )}
