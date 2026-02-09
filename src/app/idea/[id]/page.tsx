@@ -4,13 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useIdeas } from '@/context/IdeaContext';
 import styles from '@/styles/IdeaDetail.module.css';
-import { ThumbsUp, ThumbsDown, MessageSquare, ArrowLeft, Send, Upload, X } from 'lucide-react';
+import { MessageSquare, ArrowLeft, Send, Upload, X, Star, StarHalf } from 'lucide-react';
 import Link from 'next/link';
 
 export default function IdeaDetailPage() {
     const { id } = useParams();
     const router = useRouter();
-    const { getIdea, likeIdea, dislikeIdea, addComment, userVotes, editIdea, editComment, deleteIdea, deleteComment } = useIdeas();
+    const { getIdea, rateIdea, addComment, userRatings, editIdea, editComment, deleteIdea, deleteComment } = useIdeas();
 
     // Edit states
     // Edit states
@@ -32,6 +32,8 @@ export default function IdeaDetailPage() {
 
     // Local state for comment input
     const [newComment, setNewComment] = useState('');
+    const [commentRating, setCommentRating] = useState(0);
+    const [hoverRating, setHoverRating] = useState(0);
 
     // Retrieve the idea
     const idea = getIdea(Array.isArray(id) ? id[0] : id!);
@@ -69,16 +71,39 @@ export default function IdeaDetailPage() {
         );
     }
 
-    const currentVote = userVotes[idea.id];
+    const userRating = userRatings[idea.id] || 0;
 
-    const handleLike = () => likeIdea(idea.id);
-    const handleDislike = () => dislikeIdea(idea.id);
+    const averageRating = idea.ratings && idea.ratings.length > 0
+        ? idea.ratings.reduce((a, b) => a + b, 0) / idea.ratings.length
+        : 0;
+
+    const renderStars = (rating: number, size: number = 20) => {
+        return (
+            <div style={{ display: 'flex', gap: '4px' }}>
+                {[1, 2, 3, 4, 5].map((star) => {
+                    if (rating >= star) {
+                        return <Star key={star} size={size} fill="#fbbf24" color="#fbbf24" />;
+                    } else if (rating >= star - 0.5) {
+                        return (
+                            <div key={star} style={{ position: 'relative', width: size, height: size }}>
+                                <Star size={size} color="#fbbf24" style={{ position: 'absolute', opacity: 0.3 }} />
+                                <StarHalf size={size} fill="#fbbf24" color="#fbbf24" style={{ position: 'absolute', left: 0, top: 0 }} />
+                            </div>
+                        );
+                    } else {
+                        return <Star key={star} size={size} color="#fbbf24" style={{ opacity: 0.3 }} />;
+                    }
+                })}
+            </div>
+        );
+    };
 
     const handleSubmitComment = (e: React.FormEvent) => {
         e.preventDefault();
         if (!newComment.trim()) return;
-        addComment(idea.id, newComment, 'Me');
+        addComment(idea.id, newComment, 'Me', commentRating > 0 ? commentRating : undefined);
         setNewComment('');
+        setCommentRating(0);
     };
 
     // Edit Handlers
@@ -284,28 +309,41 @@ export default function IdeaDetailPage() {
                 </div>
 
                 {/* Actions (Like/Dislike) */}
-                <div className={styles.actions}>
-                    <button
-                        onClick={handleLike}
-                        className={`${styles.actionButton} ${styles.like}`}
-                        style={currentVote === 'like' ? { background: 'rgba(34, 197, 94, 0.15)', color: 'var(--accent-green)' } : {}}
-                    >
-                        <ThumbsUp size={20} fill={currentVote === 'like' ? 'currentColor' : 'none'} />
-                        <span>{idea.likes}</span>
-                    </button>
+                {/* Actions (Score Display Only) */}
+                <div style={{ padding: '2rem 0', borderTop: '1px solid var(--border)', marginTop: '2rem' }}>
+                    <div>
+                        <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
+                            {/* Score Display (Left) */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-muted)', margin: 0 }}>Confidence</h3>
+                                <div style={{ fontSize: '4rem', fontWeight: 800, lineHeight: 1, color: 'var(--foreground)' }}>
+                                    {averageRating.toFixed(1)}
+                                </div>
+                                {renderStars(averageRating, 24)}
+                                <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.25rem' }}>
+                                    {idea.ratings?.length || 0} ratings
+                                </span>
+                            </div>
 
-                    <button
-                        onClick={handleDislike}
-                        className={`${styles.actionButton} ${styles.dislike}`}
-                        style={currentVote === 'dislike' ? { background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' } : {}}
-                    >
-                        <ThumbsDown size={20} fill={currentVote === 'dislike' ? 'currentColor' : 'none'} />
-                        <span>{idea.dislikes || 0}</span>
-                    </button>
+                            {/* Rating Distribution (Right) */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', justifyContent: 'center', minWidth: '200px' }}>
+                                {[5, 4, 3, 2, 1].map(star => {
+                                    const count = idea.ratings?.filter(r => Math.round(r) === star).length || 0;
+                                    const total = idea.ratings?.length || 0;
+                                    const percentage = total > 0 ? (count / total) * 100 : 0;
 
-                    <div className={styles.stat}>
-                        <MessageSquare size={20} />
-                        <span>{idea.comments.length} Comments</span>
+                                    return (
+                                        <div key={star} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.85rem' }}>
+                                            <span style={{ width: '20px', textAlign: 'right', color: 'var(--text-muted)' }}>{star}★</span>
+                                            <div style={{ flex: 1, height: '6px', background: 'var(--bg-secondary)', borderRadius: '3px', overflow: 'hidden' }}>
+                                                <div style={{ width: `${percentage}%`, height: '100%', background: '#fbbf24', borderRadius: '3px' }} />
+                                            </div>
+                                            <span style={{ width: '30px', color: 'var(--text-muted)', textAlign: 'left' }}>{percentage.toFixed(0)}%</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -321,13 +359,58 @@ export default function IdeaDetailPage() {
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                     />
-                    <button
-                        type="submit"
-                        className={styles.postButton}
-                        disabled={!newComment.trim()}
-                    >
-                        <Send size={16} /> Post
-                    </button>
+
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginTop: '1rem',
+                        paddingTop: '1rem',
+                        borderTop: '1px solid var(--border)'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Rate this idea:</span>
+                            <div
+                                style={{ display: 'flex', gap: '0.25rem', cursor: 'pointer' }}
+                                onMouseLeave={() => setHoverRating(0)}
+                            >
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <button
+                                        type="button"
+                                        key={star}
+                                        onClick={() => setCommentRating(star)}
+                                        onMouseEnter={() => setHoverRating(star)}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            padding: 0,
+                                            cursor: 'pointer',
+                                            transition: 'transform 0.1s'
+                                        }}
+                                        className={styles.starBtn}
+                                    >
+                                        <Star
+                                            size={20}
+                                            color={(hoverRating || commentRating) >= star ? "#fbbf24" : "#52525b"}
+                                            fill={(hoverRating || commentRating) >= star ? "#fbbf24" : "none"}
+                                            style={{
+                                                opacity: (hoverRating || commentRating) >= star ? 1 : 0.5
+                                            }}
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            className={styles.postButton}
+                            disabled={!newComment.trim()}
+                            style={{ position: 'relative', bottom: 'auto', right: 'auto' }}
+                        >
+                            <Send size={16} /> Post
+                        </button>
+                    </div>
                 </form>
 
                 <div className={styles.commentList}>
@@ -343,6 +426,11 @@ export default function IdeaDetailPage() {
                                                 {comment.author}
                                                 {isOP && <span className={styles.authorBadge}>OWNER</span>}
                                             </span>
+                                            {comment.rating && comment.rating > 0 && (
+                                                <span style={{ display: 'inline-flex', alignItems: 'center', marginLeft: '0.75rem', gap: '2px', fontSize: '0.85rem', color: '#fbbf24' }}>
+                                                    {comment.rating} <Star size={12} fill="#fbbf24" />
+                                                </span>
+                                            )}
                                             <span className={styles.commentDate}>{comment.createdAt}</span>
                                         </div>
                                         {(comment.author === 'Me' || comment.author === 'You') && (

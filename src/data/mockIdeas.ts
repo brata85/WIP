@@ -3,6 +3,7 @@ export interface Comment {
   author: string;
   content: string;
   createdAt: string;
+  rating?: number;
 }
 
 export interface IdeaContent {
@@ -18,12 +19,11 @@ export interface Idea {
   authorHandle: string;
   content: IdeaContent;
   tags: string[];
-  likes: number;
-  dislikes: number;
+  ratings: number[]; // Array of ratings 0.5 - 5.0
   comments: Comment[];
   createdAt: string;
   isNew?: boolean;
-  imageUrl?: string; // Deprecated, use images
+  imageUrl?: string;
   images?: string[];
 }
 
@@ -40,8 +40,7 @@ export const MOCK_IDEAS: Idea[] = [
       roadmap: "Phase 1: Launch MVP\nPhase 2: User feedback"
     },
     tags: ["live"],
-    likes: 0,
-    dislikes: 0,
+    ratings: [],
     comments: [],
     createdAt: "Just now",
     isNew: true

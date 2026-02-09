@@ -14,13 +14,12 @@ export interface Notification {
 
 interface IdeaContextType {
     ideas: Idea[];
-    userVotes: Record<string, 'like' | 'dislike'>;
+    userRatings: Record<string, number>;
     notifications: Notification[];
-    addIdea: (idea: Omit<Idea, 'id' | 'likes' | 'dislikes' | 'comments' | 'createdAt'>) => void;
+    addIdea: (idea: Omit<Idea, 'id' | 'ratings' | 'comments' | 'createdAt'>) => void;
     getIdea: (id: string) => Idea | undefined;
-    likeIdea: (id: string) => void;
-    dislikeIdea: (id: string) => void;
-    addComment: (id: string, content: string, author: string) => void;
+    rateIdea: (id: string, rating: number) => void;
+    addComment: (id: string, content: string, author: string, rating?: number) => void;
     editIdea: (id: string, updates: Partial<Idea>) => void;
     editComment: (ideaId: string, commentId: string, newContent: string) => void;
     deleteIdea: (id: string) => void;
@@ -33,7 +32,7 @@ const IdeaContext = createContext<IdeaContextType | undefined>(undefined);
 
 export function IdeaProvider({ children }: { children: ReactNode }) {
     const [ideas, setIdeas] = useState<Idea[]>(MOCK_IDEAS);
-    const [userVotes, setUserVotes] = useState<Record<string, 'like' | 'dislike'>>({});
+    const [userRatings, setUserRatings] = useState<Record<string, number>>({});
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -52,9 +51,9 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
         }
         if (savedVotes) {
             try {
-                setUserVotes(JSON.parse(savedVotes));
+                setUserRatings(JSON.parse(savedVotes));
             } catch (e) {
-                console.error("Failed to parse saved votes", e);
+                console.error("Failed to parse saved ratings", e);
             }
         }
         if (savedNotifications) {
@@ -72,7 +71,7 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
         if (isLoaded) {
             try {
                 localStorage.setItem('antigravity_ideas', JSON.stringify(ideas));
-                localStorage.setItem('antigravity_votes', JSON.stringify(userVotes));
+                localStorage.setItem('antigravity_votes', JSON.stringify(userRatings));
                 localStorage.setItem('antigravity_notifications', JSON.stringify(notifications));
             } catch (error) {
                 console.error("Failed to save to localStorage (Quota Exceeded):", error);
@@ -82,7 +81,7 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
                 }
             }
         }
-    }, [ideas, userVotes, notifications, isLoaded]);
+    }, [ideas, userRatings, notifications, isLoaded]);
 
     const addNotification = (type: 'like' | 'dislike' | 'comment', message: string, relatedIdeaId: string) => {
         const newNotification: Notification = {
@@ -100,12 +99,11 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
     };
 
-    const addIdea = (newIdea: Omit<Idea, 'id' | 'likes' | 'dislikes' | 'comments' | 'createdAt'>) => {
+    const addIdea = (newIdea: Omit<Idea, 'id' | 'ratings' | 'comments' | 'createdAt'>) => {
         const idea: Idea = {
             ...newIdea,
             id: Math.random().toString(36).substr(2, 9),
-            likes: 0,
-            dislikes: 0,
+            ratings: [],
             comments: [],
             createdAt: 'Just now',
             isNew: true,
@@ -115,112 +113,92 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
 
     const getIdea = (id: string) => ideas.find(i => i.id === id);
 
-    const likeIdea = (id: string) => {
-        const currentVote = userVotes[id];
-        const idea = ideas.find(i => i.id === id);
-
-        if (idea && idea.author === 'You' && currentVote !== 'like') {
-            addNotification('like', 'Someone liked your idea: ' + idea.title, id);
-        }
+    const rateIdea = (id: string, rating: number) => {
+        const previousRating = userRatings[id];
 
         setIdeas(ideas.map(idea => {
             if (idea.id !== id) return idea;
 
-            let newLikes = idea.likes;
-            let newDislikes = idea.dislikes || 0;
-
-            if (currentVote === 'like') {
-                newLikes--;
-            } else if (currentVote === 'dislike') {
-                newDislikes--;
-                newLikes++;
-            } else {
-                newLikes++;
+            // If user already rated, remove their old rating first
+            let newRatings = [...(idea.ratings || [])];
+            if (previousRating !== undefined) {
+                // Trying to find and remove one instance of the previous rating.
+                // Ideally we should track *who* rated what, but for now we rely on the local user state.
+                // Since we don't have user IDs in ratings, we just remove one instance of the value.
+                const index = newRatings.indexOf(previousRating);
+                if (index > -1) {
+                    newRatings.splice(index, 1);
+                }
             }
 
-            return { ...idea, likes: newLikes, dislikes: newDislikes };
+            // Add new rating
+            newRatings.push(rating);
+
+            return { ...idea, ratings: newRatings };
         }));
 
-        setUserVotes(prev => {
-            const next = { ...prev };
-            if (currentVote === 'like') {
-                delete next[id];
-            } else {
-                next[id] = 'like';
-            }
-            return next;
-        });
-    };
+        setUserRatings(prev => ({
+            ...prev,
+            [id]: rating
+        }));
 
-    const dislikeIdea = (id: string) => {
-        const currentVote = userVotes[id];
+        // Notify author if highly rated (e.g., 4 or 5 stars)
         const idea = ideas.find(i => i.id === id);
-
-        if (idea && idea.author === 'You' && currentVote !== 'dislike') {
-            addNotification('dislike', 'Someone disliked your idea: ' + idea.title, id);
+        if (idea && idea.author === 'You' && rating >= 4 && previousRating === undefined) {
+            addNotification('like', `Someone rated your idea ${rating} stars: ` + idea.title, id);
         }
-
-        setIdeas(ideas.map(idea => {
-            if (idea.id !== id) return idea;
-
-            let newLikes = idea.likes;
-            let newDislikes = idea.dislikes || 0;
-
-            if (currentVote === 'dislike') {
-                newDislikes--;
-            } else if (currentVote === 'like') {
-                newLikes--;
-                newDislikes++;
-            } else {
-                newDislikes++;
-            }
-
-            return { ...idea, likes: newLikes, dislikes: newDislikes };
-        }));
-
-        setUserVotes(prev => {
-            const next = { ...prev };
-            if (currentVote === 'dislike') {
-                delete next[id];
-            } else {
-                next[id] = 'dislike';
-            }
-            return next;
-        });
     };
 
 
-    const addComment = (id: string, content: string, author: string) => {
+    const addComment = (id: string, content: string, author: string, rating?: number) => {
         const idea = ideas.find(i => i.id === id);
-        // Notify if someone else comments on 'You'r idea, OR even if 'You' comment on your own idea for now (as requested "when comment is added")
-        // But usually notify only if others comment. Assuming 'You' is the logged in user.
-        // The user request: "내 글에 댓글이 달렸을때".
-        // If I comment on my own post, I don't need a notification.
-        // However, since we don't have real multi-user, 'author' param is passed.
-        // In IdeaDetail, author passed is 'Me'.
-        // So if idea.author === 'You' (my post) and created comment author is NOT 'You', trigger notification.
-        // Wait, in IdeaDetail, addComment is called with author 'Me'.
-        // Let's assume 'You' is the owner of the post.
-
+        // Notify if someone else comments on 'You'r idea
         if (idea && idea.author === 'You') {
             addNotification('comment', `New comment on your idea: ${idea.title}`, id);
         }
 
+        const previousRating = userRatings[id];
+
         setIdeas(ideas.map(idea => {
             if (idea.id !== id) return idea;
+
+            // If rating provided
+            let newRatings = idea.ratings ? [...idea.ratings] : [];
+            if (rating && rating > 0) {
+                // Remove previous rating if exists (Enforce 1 rating per user)
+                if (previousRating !== undefined) {
+                    const index = newRatings.indexOf(previousRating);
+                    if (index > -1) {
+                        newRatings.splice(index, 1);
+                    }
+                }
+                newRatings.push(rating);
+            }
+
             return {
                 ...idea,
+                ratings: newRatings,
                 comments: [
                     ...idea.comments,
                     {
                         id: Math.random().toString(),
                         author,
                         content,
-                        createdAt: 'Just now'
+                        createdAt: 'Just now',
+                        rating: rating && rating > 0 ? rating : undefined
                     }
                 ]
             };
         }));
+
+        if (rating && rating > 0) {
+            setUserRatings(prev => ({ ...prev, [id]: rating }));
+
+            // Notify if highly rated
+            if (idea && idea.author === 'You' && rating >= 4) {
+                addNotification('like', `Someone rated your idea ${rating} stars: ` + idea.title, id);
+            }
+        }
     };
 
     const editIdea = (id: string, updates: Partial<Idea>) => {
@@ -258,12 +236,11 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
     return (
         <IdeaContext.Provider value={{
             ideas,
-            userVotes,
+            userRatings,
             notifications,
             addIdea,
             getIdea,
-            likeIdea,
-            dislikeIdea,
+            rateIdea,
             addComment,
             editIdea,
             editComment,
