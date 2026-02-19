@@ -16,6 +16,11 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "WIP - Share your App Ideas",
   description: "Share and get feedback on your mini app ideas.",
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({
