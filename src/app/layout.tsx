@@ -26,10 +26,25 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={outfit.className}>
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: -1,
+          opacity: 0.15,
+          filter: 'blur(8px)',
+          backgroundImage: 'url(/logo.png)',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          backgroundSize: 'contain',
+          transform: 'scale(1.5)' // Slightly larger than screen to ensure coverage with blur
+        }} />
         <Providers>
           <IdeaProvider>
             <Header />
-            <main className="container" style={{ padding: "80px 1rem 100px 1rem", minHeight: "100vh" }}>
+            <main className="container" style={{ padding: "80px 1rem 100px 1rem", minHeight: "100vh", position: "relative", zIndex: 1 }}>
               {children}
             </main>
             <BottomNav />
