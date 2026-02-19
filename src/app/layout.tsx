@@ -17,9 +17,9 @@ export const metadata: Metadata = {
   title: "WIP - Share your App Ideas",
   description: "Share and get feedback on your mini app ideas.",
   icons: {
-    icon: '/logo.png',
-    shortcut: '/logo.png',
-    apple: '/logo.png',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
   },
 };
 
@@ -40,7 +40,7 @@ export default function RootLayout({
           zIndex: -1,
           opacity: 0.15,
           filter: 'blur(8px)',
-          backgroundImage: 'url(/logo.png)',
+          backgroundImage: 'url(/favicon.ico)',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
           backgroundSize: 'contain',
