@@ -75,9 +75,26 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
                 localStorage.setItem('antigravity_notifications', JSON.stringify(notifications));
             } catch (error) {
                 console.error("Failed to save to localStorage (Quota Exceeded):", error);
+
+                // Fallback: Try removing images from ideas to save space if quota exceeded
                 if (error instanceof DOMException &&
                     (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
-                    alert("Local storage is full! Your latest changes (likely large images) might not be saved. Please delete some items.");
+                    try {
+                        // Create a lightweight version of ideas by stripping large image strings
+                        const lightweightIdeas = ideas.map(idea => ({
+                            ...idea,
+                            images: [], // Remove additional images
+                            imageUrl: idea.imageUrl && idea.imageUrl.length > 500 ? undefined : idea.imageUrl // Remove main image if it looks like a base64 string
+                        }));
+
+                        localStorage.setItem('antigravity_ideas', JSON.stringify(lightweightIdeas));
+                        localStorage.setItem('antigravity_votes', JSON.stringify(userRatings));
+                        localStorage.setItem('antigravity_notifications', JSON.stringify(notifications));
+
+                        console.warn("Storage quota exceeded. Saved text-only data to preserve content.");
+                    } catch (retryError) {
+                        alert("Storage is full and even text data could not be saved. Please clear your browser data.");
+                    }
                 }
             }
         }

@@ -75,7 +75,7 @@ export default function Home() {
   ];
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem 4rem 1rem' }}>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem 8rem 1rem' }}>
 
       {/* Header Area from Mockup */}
       <h1 style={{
@@ -120,22 +120,21 @@ export default function Home() {
       </div>
 
       {/* Bento Grid Layout */}
+      {/* List Layout */}
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-        gap: '1.5rem',
-        alignItems: 'start',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
         marginBottom: '3rem'
       }}>
         {currentIdeas.length > 0 ? (
           currentIdeas.map((idea, index) => (
-            // Make the first item span 2 columns ONLY on the FIRST page
-            <div key={idea.id} style={(currentPage === 1 && index === 0) ? { gridColumn: 'span 2' } : {}}>
+            <div key={idea.id}>
               <IdeaCard idea={idea} />
             </div>
           ))
         ) : (
-          <div style={{ textAlign: 'center', padding: '3rem', gridColumn: '1 / -1', color: 'var(--text-muted)' }}>
+          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
             <p>No ideas found matching your criteria.</p>
           </div>
         )}

@@ -34,7 +34,9 @@ export default function CreateIdeaPage() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setIsPaymentModalOpen(true);
+        // TEMPORARY: Bypass payment for development
+        // setIsPaymentModalOpen(true);
+        handlePaymentSuccess();
     };
 
     const handlePaymentSuccess = () => {
@@ -58,8 +60,32 @@ export default function CreateIdeaPage() {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setImages([...images, reader.result as string]);
+            reader.onload = (readerEvent) => {
+                const img = new Image();
+                img.src = readerEvent.target?.result as string;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+
+                    // Maintain aspect ratio
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        ctx.drawImage(img, 0, 0, width, height);
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.5); // 50% quality
+                        setImages(prev => [...prev, compressedBase64]);
+                    }
+                };
             };
             reader.readAsDataURL(file);
         }
